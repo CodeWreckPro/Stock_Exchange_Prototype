@@ -75,13 +75,13 @@ The project is built on a decoupled, microservices-style architecture that prior
 
 Get the project running on your local machine with these simple steps:
 
-# 1. Install dependencies (Requires Linux/macOS)
+### 1. Install dependencies (Requires Linux/macOS)
 ```bash
 chmod +x scripts/install-deps.sh
 ./scripts/install-deps.sh 
 ```
 
-# 2. Build the project
+### 2. Build the project
 
 ```bash
 mkdir build && cd build
@@ -89,7 +89,7 @@ cmake ..
 cmake --build .
 ```
 
-# 3. Launch the exchange processes
+### 3. Launch the exchange processes
 ```bash
 ./process1 9001 & ./process2 9002 &
 ```

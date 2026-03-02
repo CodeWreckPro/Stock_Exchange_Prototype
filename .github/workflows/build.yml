@@ -1,0 +1,49 @@
+name: CMake Build & Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ make
+          chmod +x scripts/install-deps.sh
+          ./scripts/install-deps.sh
+
+      - name: Configure (CMake)
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: |
+          cmake --build build --config Release -- -j$(nproc)
+
+      - name: Run IPC Crash Recovery Test
+        run: |
+          chmod +x build/test_ipc_crash || true
+          ./build/test_ipc_crash
+
+      - name: Start Gateway in Background
+        run: |
+          chmod +x build/Gateway || true
+          cd /home/runner/work/Stock-Exchange/Stock-Exchange
+          ./build/Gateway &
+          GATEWAY_PID=$!
+          echo "GATEWAY_PID=$GATEWAY_PID" >> $GITHUB_ENV
+          sleep 2
+
+      - name: Run Gateway Network Tests
+        run: |
+          chmod +x build/test_gateway || true
+          ./build/test_gateway
